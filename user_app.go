@@ -237,6 +237,14 @@ func (ledger *LedgerCosmos) signv2(bip32Path []uint32, transaction []byte) ([]by
 			}
 			header := []byte{userCLA, userINSSignSECP256K1, 0, 0, byte(len(pathBytes))}
 			message = append(header, pathBytes...)
+
+			hrpBytes := []byte("xpla")
+			message[25] = byte(len(hrpBytes))
+			for i := 0; i < len(hrpBytes); i++ {
+				idx := 26
+				message[idx+i] = hrpBytes[i]
+			}
+
 		} else {
 			if len(transaction) < userMessageChunkSize {
 				chunk = len(transaction)
