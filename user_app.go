@@ -20,7 +20,7 @@ import (
 	"errors"
 	"math"
 
-	"github.com/zondax/ledger-go"
+	ledger_go "github.com/zondax/ledger-go"
 )
 
 const (
@@ -130,7 +130,7 @@ func (ledger *LedgerCosmos) SignSECP256K1(bip32Path []uint32, transaction []byte
 // GetPublicKeySECP256K1 retrieves the public key for the corresponding bip32 derivation path (compressed)
 // this command DOES NOT require user confirmation in the device
 func (ledger *LedgerCosmos) GetPublicKeySECP256K1(bip32Path []uint32) ([]byte, error) {
-	pubkey, _, err := ledger.getAddressPubKeySECP256K1(bip32Path, "cosmos", false)
+	pubkey, _, err := ledger.getAddressPubKeySECP256K1(bip32Path, "xpla", false)
 	return pubkey, err
 }
 
@@ -237,6 +237,11 @@ func (ledger *LedgerCosmos) signv2(bip32Path []uint32, transaction []byte) ([]by
 			}
 			header := []byte{userCLA, userINSSignSECP256K1, 0, 0, byte(len(pathBytes))}
 			message = append(header, pathBytes...)
+
+			hrpBytes := []byte("xpla")
+			msgHrpBytes := append([]byte{byte(len(hrpBytes))}, hrpBytes...)
+			copy(message[25:], msgHrpBytes)
+
 		} else {
 			if len(transaction) < userMessageChunkSize {
 				chunk = len(transaction)
