@@ -241,13 +241,12 @@ func (ledger *LedgerCosmos) signv2(bip32Path []uint32, transaction []byte, p2 by
 			if err != nil {
 				return nil, err
 			}
-			header := []byte{userCLA, userINSSignSECP256K1, 0, p2, byte(len(pathBytes))}
-			message = append(header, pathBytes...)
-
 			hrpBytes := []byte("xpla")
 			msgHrpBytes := append([]byte{byte(len(hrpBytes))}, hrpBytes...)
-			copy(message[25:], msgHrpBytes)
+			pathBytes = append(pathBytes, msgHrpBytes...)
 
+			header := []byte{userCLA, userINSSignSECP256K1, 0, p2, byte(len(pathBytes))}
+			message = append(header, pathBytes...)
 		} else {
 			if len(transaction) < userMessageChunkSize {
 				chunk = len(transaction)
